@@ -79,18 +79,14 @@
 </template>
 
 <script>
-import axios from "axios";
-
 export default {
-  data() {
-    return {
-      meetups: {}
-    };
+  computed: {
+    meetups() {
+      return this.$store.state.meetups.items;
+    }
   },
   created() {
-    axios.get("/api/v1/meetups").then(res => {
-      this.meetups = res.data;
-    });
+    this.$store.dispatch("meetups/fetchMeetups");
   }
 };
 </script>

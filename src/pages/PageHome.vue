@@ -1,7 +1,7 @@
 <template>
   <div>
     <AppHero />
-    <div class="container">
+    <div v-if="pageLoader_isDataLoaded" class="container">
       <section class="section">
         <div class="m-b-lg">
           <h1 class="title is-inline">Featured Meetups in "Location"</h1>
@@ -38,30 +38,38 @@
         </div>
       </section>
     </div>
+    <div v-else class="container">
+      <AppSpinner />
+    </div>
   </div>
 </template>
 
 <script>
-import axios from "axios";
 import CategoryItem from "../components/CategoryItem.vue";
 import MeetupItem from "../components/MeetupItem.vue";
-
+import { mapActions, mapState } from "vuex";
+import pageLoader from "../mixins/pageLoader";
 export default {
   components: { CategoryItem, MeetupItem },
-  data() {
-    return {
-      categories: [],
-      meetups: []
-    };
+
+  mixins: [pageLoader],
+  computed: {
+    ...mapState({
+      meetups: state => state.meetups.items,
+      categories: state => state.categories.items
+    })
   },
   created() {
-    axios.get("/api/v1/meetups").then(res => {
-      this.meetups = res.data;
-    });
-
-    axios.get("/api/v1/categories").then(res => {
-      this.categories = res.data;
-    });
+    Promise.all([this.fetchMeetups(), this.fetchCategories()])
+      .then(results => this.pageLoader_resolveData())
+      .catch(err => {
+        console.error(err);
+        this.pageLoader_resolveData();
+      });
+  },
+  methods: {
+    ...mapActions("meetups", ["fetchMeetups"]),
+    ...mapActions("categories", ["fetchCategories"])
   }
 };
 </script>
