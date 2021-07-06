@@ -61,7 +61,7 @@ export default {
   },
   created() {
     Promise.all([this.fetchMeetups(), this.fetchCategories()])
-      .then(results => this.pageLoader_resolveData())
+      .then(() => this.pageLoader_resolveData())
       .catch(err => {
         console.error(err);
         this.pageLoader_resolveData();
