@@ -1,4 +1,15 @@
 import axios from "axios";
+import jwt from "jsonwebtoken";
+import axiosInstance from "../../services/axios";
+import { rejectError } from "@/helpers";
+
+function checkTokenValidity(token) {
+  if (token) {
+    const decodedToken = jwt.decode(token);
+    return decodedToken && decodedToken.exp * 1000 > new Date().getTime();
+  }
+  return false;
+}
 
 export default {
   namespaced: true,
@@ -17,40 +28,60 @@ export default {
   },
   actions: {
     loginWithEmailAndPassword({ commit }, userData) {
-      return axios.post("/api/v1/users/login", userData).then(res => {
-        const user = res.data;
-        commit("setAuthUser", user);
-      });
-    },
-    registerUser(context, userData) {
-      return axios.post("/api/v1/users/register", userData);
-    },
-    logout({ commit }) {
       return axios
-        .post("/api/v1/users/logout")
-        .then(() => {
-          commit("setAuthUser", null);
-          return true;
+        .post("/api/v1/users/login", userData)
+        .then(res => {
+          // debugger;
+          const user = res.data;
+          localStorage.setItem("meetup-jwt", user.token);
+          commit("setAuthUser", user);
         })
         .catch(err => {
-          return err;
+          rejectError(err);
         });
+    },
+    registerUser(context, userData) {
+      return axios
+        .post("/api/v1/users/register", userData)
+        .catch(err => rejectError(err));
+    },
+    logout({ commit }) {
+      // For session Authentication passport
+      // return axios
+      //   .post("/api/v1/users/logout")
+      //   .then(() => {
+      //     commit("setAuthUser", null);
+      //     return true;
+      //   })
+      //   .catch(err => {
+      //     return err;
+      //   });
+      return new Promise(resolve => {
+        localStorage.removeItem("meetup-jwt");
+        commit("setAuthUser", null);
+        resolve(true);
+      });
     },
     getAuthUser({ commit, getters }) {
       const authUser = getters["authUser"];
-      console.log("auth user desde get auth user", authUser);
-      if (authUser) {
+      const token = localStorage.getItem("meetup-jwt");
+      const isTokenValid = checkTokenValidity(token);
+      // debugger;
+      if (authUser && isTokenValid) {
         return Promise.resolve(authUser);
       }
 
       const config = {
-        headers: { "Cache-Control": "no-cache" }
+        headers: {
+          "Cache-Control": "no-cache"
+        }
       };
-      return axios
+
+      return axiosInstance
         .get("/api/v1/users/me", config)
         .then(res => {
           const user = res.data;
-          console.log(user);
+          localStorage.setItem("meetup-jwt", user.token);
           commit("setAuthUser", user);
           commit("setAuthState", true);
           return user;

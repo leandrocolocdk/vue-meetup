@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint"
@@ -65,8 +64,8 @@
       "eslint:recommended"
     ],
     "rules": {
-      "no-debugger":0,
-      "no-console": "off" 
+      "no-debugger": 0,
+      "no-console": "off"
     },
     "parserOptions": {
       "parser": "babel-eslint"

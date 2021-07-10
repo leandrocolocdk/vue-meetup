@@ -18,7 +18,9 @@ exports.getCurrentUser = function(req, res) {
     return res.sendStatus(422);
   }
 
-  return res.json(user);
+  // Only for session Auth Passport
+  // return res.json(user);
+  return res.json(user.toAuthJSON());
 };
 
 exports.register = function(req, res) {
@@ -42,7 +44,8 @@ exports.register = function(req, res) {
   if (registerData.password !== registerData.passwordConfirm) {
     return res.status(422).json({
       errors: {
-        password: "Password is not the same as confirmation password"
+        password: "Password is not the same as confirmation password",
+        message: "Password is not the same as confirmation password"
       }
     });
   }
@@ -63,7 +66,8 @@ exports.login = function(req, res, next) {
   if (!email) {
     return res.status(422).json({
       errors: {
-        email: "is required"
+        email: "is required",
+        message: "Email is required"
       }
     });
   }
@@ -71,7 +75,8 @@ exports.login = function(req, res, next) {
   if (!password) {
     return res.status(422).json({
       errors: {
-        password: "is required"
+        password: "is required",
+        message: "Password is required"
       }
     });
   }
@@ -82,16 +87,19 @@ exports.login = function(req, res, next) {
     }
 
     if (passportUser) {
-      req.login(passportUser, function(err) {
-        if (err) {
-          next(err);
-        }
-        return res.json(passportUser);
-      });
+      // // Only for Session auth Passport Local
+      // req.login(passportUser, function(err) {
+      //   if (err) {
+      //     next(err);
+      //   }
+      //   return res.json(passportUser);
+      // });
+
+      return res.json(passportUser.toAuthJSON());
     } else {
-      return res
-        .status(422)
-        .send({ errors: { authentication: "Ooops, something went wrong!" } });
+      return res.status(422).send({
+        errors: { message: "Invalid password or email address" }
+      });
     }
   })(req, res, next);
 };

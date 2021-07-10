@@ -105,7 +105,25 @@ export default {
       this.$v.form.$touch();
       this.$store
         .dispatch("auth/loginWithEmailAndPassword", this.form)
-        .then(() => this.$router.push("/").catch(err => console.log(err)));
+        .then(() => {
+          this.$router.push("/");
+          // debugger;
+          console.log("Poruqe mierda entra aca");
+        })
+        .catch(errorMessage => {
+          // debugger;
+          console.log("error en login", errorMessage);
+          this.$toasted.error(errorMessage, {
+            duration: 5000
+          });
+        });
+      // .catch(errorMessage => {
+      //   // debugger;
+      //   console.log("error en login");
+      //   this.$toasted.error(errorMessage, {
+      //     duration: 5000
+      //   });
+      // });
     }
   }
 };

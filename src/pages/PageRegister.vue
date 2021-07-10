@@ -185,10 +185,10 @@ export default {
   validations: {
     form: {
       username: {
-        required
+        // required
       },
       name: {
-        required
+        // required
       },
       email: {
         required,
@@ -216,11 +216,17 @@ export default {
   },
   methods: {
     register() {
-      this.$store.dispatch("auth/registerUser", this.form).then(() => {
-        this.$router.push("/login").catch(err => {
-          console.log(err);
+      this.$store
+        .dispatch("auth/registerUser", this.form)
+        .then(() => {
+          this.$router.push("/login");
+        })
+        .catch(errorMessage => {
+          console.log("error en registrar.");
+          this.$toasted.error(errorMessage, {
+            duration: 5000
+          });
         });
-      });
     }
   }
 };
