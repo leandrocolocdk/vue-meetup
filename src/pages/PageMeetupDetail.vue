@@ -26,7 +26,9 @@
         </div>
         <div class="is-pulled-right">
           <!-- We will handle this later (: -->
-          <button class="button is-danger">Leave Group</button>
+          <button v-if="isMember" @click="leaveMeetup" class="button is-danger">
+            Leave Meetup
+          </button>
         </div>
       </div>
     </section>
@@ -93,10 +95,21 @@
               <h3 class="title is-3">About the Meetup</h3>
               <p>{{ meetup.description }}</p>
               <!-- Join Meetup, We will handle it later (: -->
-              <button class="button is-primary">Join In</button>
+              <button
+                v-if="canJoin"
+                @click="joinMeetup"
+                class="button is-primary"
+              >
+                Join In
+              </button>
               <!-- Not logged In Case, handle it later (: -->
-              <!-- <button :disabled="true"
-                      class="button is-warning">You need authenticate in order to join</button> -->
+              <button
+                v-if="!isAuthenticated"
+                :disabled="true"
+                class="button is-warning"
+              >
+                You need authenticate in order to join
+              </button>
             </div>
             <!-- Thread List START -->
             <div class="content is-medium">
@@ -160,13 +173,8 @@
 
 <script>
 import { mapActions, mapState } from "vuex";
-export default {
-  created() {
-    const meetupId = this.$route.params.id;
 
-    this.fetchMeetupById(meetupId);
-    this.fetchThreads(meetupId);
-  },
+export default {
   computed: {
     ...mapState({
       meetup: state => state.meetups.item,
@@ -174,11 +182,35 @@ export default {
     }),
     meetupCreator() {
       return this.meetup.meetupCreator || "";
+    },
+    isAuthenticated() {
+      return this.$store.getters["auth/isAuthenticated"];
+    },
+    isMeetupOwner() {
+      return this.$store.getters["auth/isMeetupOwner"](this.meetupCreator._id);
+    },
+    isMember() {
+      return this.$store.getters["auth/isMember"](this.meetup._id);
+    },
+    canJoin() {
+      return !this.isMeetupOwner && this.isAuthenticated && !this.isMember;
     }
+  },
+  created() {
+    const meetupId = this.$route.params.id;
+
+    this.fetchMeetupById(meetupId);
+    this.fetchThreads(meetupId);
   },
   methods: {
     ...mapActions("meetups", ["fetchMeetupById"]),
-    ...mapActions("threads", ["fetchThreads"])
+    ...mapActions("threads", ["fetchThreads"]),
+    joinMeetup() {
+      this.$store.dispatch("meetups/joinMeetup", this.meetup._id);
+    },
+    leaveMeetup() {
+      this.$store.dispatch("meetups/leaveMeetup", this.meetup._id);
+    }
   }
 };
 </script>
@@ -298,8 +330,7 @@ li {
   margin: 0;
   margin-right: 15px;
 }
-.post-item {
-}
+
 .media + .media {
   border: none;
   margin-top: 0;
