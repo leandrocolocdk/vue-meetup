@@ -108,7 +108,7 @@ export default {
         .then(() => {
           this.$router.push("/");
           // debugger;
-          console.log("Poruqe mierda entra aca");
+          //console.log("Poruqe mierda entra aca");
         })
         .catch(errorMessage => {
           // debugger;
