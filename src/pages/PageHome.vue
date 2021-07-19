@@ -4,7 +4,9 @@
     <div v-if="pageLoader_isDataLoaded" class="container">
       <section class="section">
         <div class="m-b-lg">
-          <h1 class="title is-inline">Featured Meetups in "Location"</h1>
+          <h1 class="title is-inline">
+            Featured Meetups in "Location"
+          </h1>
           <AppDropdown />
           <router-link
             v-if="user"

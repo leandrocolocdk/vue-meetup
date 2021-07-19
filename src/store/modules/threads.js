@@ -53,7 +53,7 @@ export default {
 
       if (threadIndex > -1) {
         const posts = state.items[threadIndex].posts;
-        posts.push(post);
+        posts.unshift(post);
         commit("savePostToThread", { posts, index: threadIndex });
       }
     }
