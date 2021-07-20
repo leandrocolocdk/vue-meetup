@@ -5,8 +5,9 @@
         <h1 class="title is-4">VueMeetuper</h1>
       </router-link>
       <a
+        @click="navOpen = !navOpen"
         role="button"
-        class="navbar-burger burger"
+        :class="['navbar-burger', { 'is-active': navOpen }]"
         aria-label="menu"
         aria-expanded="false"
         data-target="navbarBasicExample"
@@ -17,7 +18,10 @@
       </a>
     </div>
 
-    <div id="navbarBasicExample" class="navbar-menu is-active">
+    <div
+      id="navbarBasicExample"
+      :class="['navbar-menu', { 'is-active': navOpen }]"
+    >
       <div class="navbar-start">
         <router-link :to="'/'" class="navbar-item">
           Home
@@ -59,9 +63,9 @@
             Account
           </a>
           <div class="navbar-dropdown">
-            <a href="#" class="navbar-item">
+            <router-link :to="{ name: 'PageProfile' }" class="navbar-item">
               Profile
-            </a>
+            </router-link>
             <hr class="navbar-divider" />
             <a @click.prevent="logout" class="navbar-item">
               Logout
@@ -89,6 +93,11 @@
 <script>
 import { mapGetters } from "vuex";
 export default {
+  data() {
+    return {
+      navOpen: false
+    };
+  },
   computed: {
     ...mapGetters({ user: "auth/authUser" })
   },
@@ -97,6 +106,9 @@ export default {
       this.$store.dispatch("auth/logout").then(() => {
         this.$router.push("/");
       });
+    },
+    toggleNavbar() {
+      this.navOpen = true;
     }
   }
 };
