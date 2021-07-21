@@ -7,10 +7,19 @@
           <div class="level">
             <div class="level-left">
               <div class="level-item">
-                <input type="text" class="input" placeholder="New York" />
+                <input
+                  v-model="searchLocation"
+                  @keyup.enter="fetchMeetups"
+                  type="text"
+                  class="input"
+                  placeholder="New York"
+                />
               </div>
-              <div class="level-item">
-                <span>Meetups in New York, USA</span>
+              <div
+                v-if="searchLocation && meetups && meetups.length > 0"
+                class="level-item"
+              >
+                <span>Meetups in {{ meetups[0].location }}</span>
               </div>
             </div>
             <div class="level-right">
@@ -25,7 +34,10 @@
     </div>
     <div class="container">
       <section class="section page-find">
-        <div class="columns cover is-multiline">
+        <div
+          v-if="meetups && meetups.length > 0"
+          class="columns cover is-multiline"
+        >
           <div
             v-for="meetup of meetups"
             :key="meetup._id"
@@ -67,7 +79,7 @@
             </router-link>
           </div>
         </div>
-        <div>
+        <div v-else>
           <span class="tag is-warning is-large"
             >No meetups found :( You might try to change search criteria
             (:</span
@@ -80,13 +92,32 @@
 
 <script>
 export default {
+  data() {
+    return {
+      searchLocation: this.$store.getters["meta/location"],
+      filter: {}
+    };
+  },
   computed: {
     meetups() {
       return this.$store.state.meetups.items;
     }
   },
+  methods: {
+    fetchMeetups() {
+      if (this.searchLocation) {
+        this.filter["location"] = this.searchLocation
+          .toLowerCase()
+          .replace(/[\s,]+/g, "")
+          .trim();
+      }
+      this.$store.dispatch("meetups/fetchMeetups", {
+        filter: this.filter
+      });
+    }
+  },
   created() {
-    this.$store.dispatch("meetups/fetchMeetups");
+    this.fetchMeetups();
   }
 };
 </script>

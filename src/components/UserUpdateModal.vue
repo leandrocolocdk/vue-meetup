@@ -71,14 +71,12 @@ export default {
   },
   methods: {
     emitUser() {
-      const user2 = this.user;
-      console.log(user2),
-        this.$emit("userSubmitted", {
-          user: this.user,
-          done: () => {
-            this.isOpen = false;
-          }
-        });
+      this.$emit("userSubmitted", {
+        user: this.user,
+        done: () => {
+          this.isOpen = false;
+        }
+      });
     }
   }
 };
