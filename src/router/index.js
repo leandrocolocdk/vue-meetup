@@ -29,6 +29,12 @@ const router = new Router({
       meta: { onlyAuthUser: true }
     },
     {
+      path: "/find/:category",
+      name: "PageMeetupFindCategory",
+      component: PageMeetupFind,
+      props: true
+    },
+    {
       path: "/find",
       name: "PageMeetupFind",
       component: PageMeetupFind
@@ -50,7 +56,6 @@ const router = new Router({
       name: "PageMeetupDetail",
       component: PageMeetupDetail
     },
-
     {
       path: "/login",
       name: "PageLogin",
