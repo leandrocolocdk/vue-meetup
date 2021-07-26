@@ -19,7 +19,8 @@ Vue.component("AppSpinner", AppSpinner);
 Vue.use(Vuelidate);
 Vue.use(Toasted);
 Vue.use(filters);
-Vue.use(AppSocket, { connection: "http://localhost:3001" });
+
+Vue.use(AppSocket, { connection: process.env.VUE_APP_URI });
 
 new Vue({
   router,
