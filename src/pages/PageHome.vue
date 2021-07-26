@@ -5,7 +5,7 @@
       <section class="section">
         <div class="m-b-lg">
           <h1 class="title is-inline">
-            Featured Meetups in "Location"
+            Featured Meetups <span v-if="ipLocation">in {{ ipLocation }}</span>
           </h1>
           <AppDropdown />
           <router-link
@@ -55,13 +55,17 @@ import CategoryItem from "../components/CategoryItem.vue";
 import MeetupItem from "../components/MeetupItem.vue";
 import { mapActions, mapState, mapGetters } from "vuex";
 import pageLoader from "../mixins/pageLoader";
+import { processLocation } from "../helpers/index";
+
 export default {
   components: { CategoryItem, MeetupItem },
 
   mixins: [pageLoader],
   computed: {
     ...mapGetters({
-      user: "auth/authUser"
+      user: "auth/authUser",
+      // ipLocation: "meta/location"
+      ipLocation: null
     }),
     ...mapState({
       meetups: state => state.meetups.items,
@@ -69,7 +73,11 @@ export default {
     })
   },
   created() {
-    Promise.all([this.fetchMeetups(), this.fetchCategories()])
+    const filter = {};
+    if (this.ipLocation) {
+      filter["location"] = processLocation(this.ipLocation);
+    }
+    Promise.all([this.fetchMeetups({ filter }), this.fetchCategories()])
       .then(() => this.pageLoader_resolveData())
       .catch(err => {
         console.error(err);

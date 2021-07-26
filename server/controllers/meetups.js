@@ -104,3 +104,25 @@ exports.leaveMeetup = function(req, res) {
     .then(() => res.json({ id }))
     .catch(errors => res.status(422).send({ errors }));
 };
+
+exports.updateMeetup = function(req, res) {
+  const meetupData = req.body;
+  const { id } = req.params;
+  const user = req.user;
+  meetupData.updateAt = new Date();
+
+  if (user.id === meetupData.meetupCreator._id) {
+    Meetup.findByIdAndUpdate(id, { $set: meetupData }, { new: true })
+      .populate("meetupCreator", "name id avatar")
+      .populate("category")
+      .exec((errors, updatedMeetup) => {
+        if (errors) {
+          return res.sendStatus(422).send({ errors });
+        }
+
+        return res.json(updatedMeetup);
+      });
+  } else {
+    return res.status(401).send({ errors: { message: "Not Authorized!" } });
+  }
+};

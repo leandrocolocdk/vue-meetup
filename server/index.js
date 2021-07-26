@@ -32,6 +32,7 @@ const meetupsRoutes = require("./routes/meetups"),
 mongoose
   .connect(config.DB_URI, {
     useNewUrlParser: true,
+    useFindAndModify: false,
     useUnifiedTopology: true,
     useCreateIndex: true
   })

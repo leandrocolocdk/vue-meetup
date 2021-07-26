@@ -10,6 +10,7 @@ router.post("", AuthCtrl.onlyAuthUser, MeetupsCtrl.createMeetup);
 router.get("/secret", AuthCtrl.onlyAuthUser, MeetupsCtrl.getSecrets);
 
 router.get("/:id", MeetupsCtrl.getMeetupById);
+router.patch("/:id", AuthCtrl.onlyAuthUser, MeetupsCtrl.updateMeetup);
 
 router.post("/:id/join", AuthCtrl.onlyAuthUser, MeetupsCtrl.joinMeetup);
 router.post("/:id/leave", AuthCtrl.onlyAuthUser, MeetupsCtrl.leaveMeetup);
